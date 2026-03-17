@@ -1,74 +1,104 @@
-// --- LÓGICA DE JUEGO ---
-function intentarBingo(idx) {
-    const btn = document.getElementById(`btn-${idx}`);
-    const socio = JSON.parse(sessionStorage.getItem('socioActual'));
-    const estado = JSON.parse(localStorage.getItem('bingoEstado'));
-    const cartonDiv = document.getElementById(`carton-${idx}`);
+// --- CONFIGURACIÓN GLOBAL ---
+const TIEMPO_BOLA = 10000; // 10 segundos entre bolas
+
+// --- MOTOR DE INICIALIZACIÓN ---
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("Sistema Bingo Club cargado correctamente.");
+    if (document.getElementById('listaSocios')) initAdmin();
+    if (document.getElementById('relojDiscreto')) initJuego();
+});
+
+// --- FUNCIONES DE ADMINISTRACIÓN ---
+function initAdmin() {
+    renderSocios();
+    // Actualizar el monitor cada 2 segundos
+    setInterval(() => {
+        const est = JSON.parse(localStorage.getItem('bingoEstado'));
+        const gan = JSON.parse(localStorage.getItem('ganadorBingo'));
+        if(est && est.ultima) document.getElementById('bolaCantada').innerText = est.ultima;
+        if(gan) document.getElementById('datosGanador').innerHTML = `<b>${gan.nombre}</b> (${gan.hora})`;
+    }, 2000);
+}
+
+function crearSocioMaestro() {
+    const nom = document.getElementById('nombreSocio').value.trim();
+    const can = parseInt(document.getElementById('cantCartones').value);
+
+    if(!nom) return alert("Escribe un nombre.");
     
-    if (!estado || !estado.bolas) return;
+    const cod = Math.random().toString(36).substring(2,7).toUpperCase();
+    const tabs = [];
+    for(let i=0; i<can; i++) tabs.push(generarCarton());
 
-    // 1. Obtener todos los números del cartón (menos el comodín)
-    let celdas = Array.from(cartonDiv.querySelectorAll('.cell'));
-    let numerosDelCarton = celdas
-        .filter(c => !c.classList.contains('comodin'))
-        .map(c => parseInt(c.innerText));
+    const socios = JSON.parse(localStorage.getItem('sociosBingo')) || [];
+    socios.push({ nombre: nom, codigo: cod, cartones: tabs });
+    
+    localStorage.setItem('sociosBingo', JSON.stringify(socios));
+    document.getElementById('nombreSocio').value = "";
+    renderSocios();
+    alert(`SOCIO: ${nom}\nCÓDIGO: ${cod}`);
+}
 
-    // 2. Verificar si TODOS los números del cartón están en las bolas cantadas
-    let tieneTodoElCarton = numerosDelCarton.every(num => estado.bolas.includes(num));
+function guardarProgramacion() {
+    const fecha = document.getElementById('fechaSorteo').value;
+    if(!fecha) return alert("Selecciona fecha y hora.");
+    
+    localStorage.setItem('fechaSorteoBingo', fecha);
+    localStorage.removeItem('bingoEstado'); // Reinicia el bombo
+    alert("Sorteo programado con éxito.");
+}
 
-    // 3. Verificar si el socio marcó la última bola cantada (condición de victoria)
-    let ultimaBolaCantada = estado.ultima;
-    let marcoUltimaBola = numerosDelCarton.includes(ultimaBolaCantada);
+function renderSocios() {
+    const div = document.getElementById('listaSocios');
+    if(!div) return;
+    const socios = JSON.parse(localStorage.getItem('sociosBingo')) || [];
+    div.innerHTML = socios.map((s, i) => `
+        <div style="background:white; padding:10px; margin-bottom:5px; border-radius:8px; display:flex; justify-content:space-between;">
+            <span>${s.nombre} (<b>${s.codigo}</b>)</span>
+            <button onclick="eliminarSocio(${i})" style="color:red; border:none; background:none; cursor:pointer;">✕</button>
+        </div>
+    `).join('');
+}
 
-    if (tieneTodoElCarton && marcoUltimaBola) {
-        // ¡BINGO REAL!
-        localStorage.setItem('ganadorOficial', socio.nombre);
-        localStorage.setItem('ganadorBingo', JSON.stringify({nombre: socio.nombre, hora: new Date().toLocaleTimeString()}));
-        alert("¡FELICIDADES! Has ganado el Bingo.");
+function eliminarSocio(i) {
+    const socios = JSON.parse(localStorage.getItem('sociosBingo')) || [];
+    socios.splice(i, 1);
+    localStorage.setItem('sociosBingo', JSON.stringify(socios));
+    renderSocios();
+}
+
+// --- GENERADOR DE CARTONES ---
+function generarCarton() {
+    const r = { B:[1,15], I:[16,30], N:[31,45], G:[46,60], O:[61,75] };
+    let tab = {};
+    ['B','I','N','G','O'].forEach(l => {
+        let col = [];
+        while(col.length < 5) {
+            let n = Math.floor(Math.random() * (r[l][1]-r[l][0]+1)) + r[l][0];
+            if(!col.includes(n)) col.push(n);
+        }
+        tab[l] = col.sort((a,b)=>a-b);
+    });
+    return tab;
+}
+
+// --- LÓGICA DE ACCESO (INDEX) ---
+function validarEntrada() {
+    const cod = document.getElementById('accessCode').value.toUpperCase();
+    const socios = JSON.parse(localStorage.getItem('sociosBingo')) || [];
+    const socio = socios.find(s => s.codigo === cod);
+    
+    if(socio) {
+        sessionStorage.setItem('socioActual', JSON.stringify(socio));
+        window.location.href = 'juego.html';
     } else {
-        // BINGO FALSO - Penalización 15 seg
-        penalizarBoton(btn);
-        alert("¡BINGO FALSO! Aún faltan números o no has marcado la última bola.");
+        alert("Código no válido.");
     }
 }
 
-function penalizarBoton(btn) {
-    btn.disabled = true;
-    btn.classList.add('btn-disabled');
-    let seg = 15;
-    const timer = setInterval(() => {
-        btn.innerText = `BLOQUEADO (${seg}s)`;
-        seg--;
-        if (seg < 0) {
-            clearInterval(timer);
-            btn.disabled = false;
-            btn.classList.remove('btn-disabled');
-            btn.innerText = "¡CANTAR BINGO!";
-        }
-    }, 1000);
-}
-
-// --- GENERACIÓN DE CARTONES (MANTENIENDO EL ORDEN CORRECTO) ---
-function dibujarTablas(tabs) {
-    const container = document.getElementById('cartonesContainer');
-    container.innerHTML = tabs.map((t, idx) => {
-        let celdasHTML = "";
-        // Generamos por FILAS para que visualmente coincidan con las letras B I N G O
-        for (let i = 0; i < 5; i++) {
-            ['B','I','N','G','O'].forEach(l => {
-                const v = t[l][i];
-                const esCentro = (l === 'N' && i === 2);
-                celdasHTML += `<div class="cell ${esCentro ? 'comodin marked' : ''}" onclick="this.classList.toggle('marked')">${v}</div>`;
-            });
-        }
-        return `
-            <div class="carton-card" id="carton-${idx}">
-                <div style="display:grid; grid-template-columns: repeat(5,1fr); text-align:center; font-weight:bold; color:var(--marine); margin-bottom:5px;">
-                    <span>B</span><span>I</span><span>N</span><span>G</span><span>O</span>
-                </div>
-                <div class="bingo-grid">${celdasHTML}</div>
-                <button class="btn-bingo-carton" id="btn-${idx}" onclick="intentarBingo(${idx})">¡CANTAR BINGO!</button>
-            </div>
-        `;
-    }).join('');
+function reiniciarTodo() {
+    if(confirm("¿Borrar todos los datos?")) {
+        localStorage.clear();
+        location.reload();
+    }
 }
