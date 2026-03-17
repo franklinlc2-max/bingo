@@ -1,0 +1,106 @@
+:root {
+    --mango: #ff9800;
+    --marine: #004d61;
+    --glass-bg: rgba(255, 255, 255, 0.3); /* Transparencia para efecto cristal */
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Fondo de playa configurado */
+    background: url('fondo.jpg') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+/* CONTENEDOR EFECTO CRISTAL */
+.glass-container {
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 35px 25px;
+    width: 90%;
+    max-width: 380px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+/* IMÁGENES DEL ENCABEZADO */
+.main-logo-img {
+    width: 260px; /* Tamaño del logo superior */
+    margin: 0 auto 10px;
+    display: block;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+}
+
+.welcome-img {
+    width: 90%; /* Se adapta al ancho del contenedor */
+    max-width: 260px;
+    margin: 0 auto 25px;
+    display: block;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+}
+
+/* INPUT Y BOTÓN */
+.input-modern {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.9);
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+    color: var(--marine);
+}
+
+.btn-glow {
+    width: 100%;
+    padding: 16px;
+    background: var(--marine);
+    color: white !important;
+    border: none;
+    border-radius: 12px;
+    font-weight: 900;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0, 77, 97, 0.4);
+    transition: transform 0.2s;
+}
+
+.btn-glow:active { transform: scale(0.98); }
+
+/* PIE DE PÁGINA / SOPORTE */
+.support-footer { margin-top: 25px; }
+.support-footer p { font-size: 0.85rem; color: #333; margin-bottom: 8px; font-weight: 500; }
+
+.wa-link {
+    display: inline-block;
+    color: var(--marine);
+    text-decoration: none;
+    font-weight: 900;
+    font-size: 0.9rem;
+    background: rgba(255,255,255,0.5);
+    padding: 8px 15px;
+    border-radius: 20px;
+    transition: background 0.3s;
+}
+
+.wa-link:hover { background: rgba(255,255,255,0.8); }
+
+/* ANIMACIÓN DE ENTRADA */
+.anim-fade-in {
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

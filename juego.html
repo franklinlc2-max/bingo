@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingo Club - En Vivo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="game-page">
+    <img src="logo.png" class="corner-logo" alt="Logo">
+
+    <div id="game-over-screen">
+        <div class="glass-container">
+            <h1 style="color: var(--mango); font-size: 2.5rem;">¡BINGO!</h1>
+            <p style="font-size: 1.2rem; margin: 15px 0;">Tenemos un ganador oficial:</p>
+            <h2 id="winner-name" style="color: white; background: var(--marine); padding: 10px; border-radius: 10px;">---</h2>
+            <button onclick="location.href='index.html'" class="btn-glow" style="margin-top: 20px;">VOLVER AL INICIO</button>
+        </div>
+    </div>
+
+    <div id="pantallaEspera" class="timer-float" style="position: fixed; top: 0; width: 100%; background: var(--mango); color: white; text-align: center; padding: 10px; z-index: 1005; font-weight: bold;">
+        PRÓXIMO SORTEO EN: <span id="relojDiscreto">00:00</span>
+    </div>
+
+    <div id="areaJuego" style="display:none;">
+        <header class="game-top-nav">
+            <div style="margin-bottom: 10px;">Socio: <b id="userName">--</b></div>
+            <div class="ball-wrapper" style="width: 90px; height: 90px; background: white; border-radius: 50%; border: 5px solid var(--mango); margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+                <span id="letraBola" style="font-size: 1rem; color: var(--mango); font-weight: bold;">?</span>
+                <span id="numeroBola" style="font-size: 2.5rem; color: #333; font-weight: 900; line-height: 1;">--</span>
+            </div>
+            <div id="historialBolas" class="history-container"></div>
+        </header>
+        
+        <main id="cartonesContainer" class="game-scroll-container">
+            </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

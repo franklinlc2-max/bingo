@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Bingo Club</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="admin-page">
+    <div class="admin-wrapper">
+        <div class="glass-container" style="margin-top: 20px; max-width: 500px;">
+            <div style="color: red; font-weight: bold; font-size: 0.8rem; margin-bottom: 10px;">🔴 MONITOR EN VIVO</div>
+            <div id="bolaCantada" class="master-ball" style="width: 80px; height: 80px; background: var(--marine); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 900; margin: 0 auto 15px; border: 4px solid var(--mango);">--</div>
+            <div id="datosGanador" style="background: rgba(255,255,255,0.5); padding: 10px; border-radius: 10px; min-height: 50px;">
+                <small>Esperando ganador...</small>
+            </div>
+        </div>
+
+        <div class="glass-container" style="max-width: 500px;">
+            <h3 style="color: var(--marine); margin-bottom: 15px;">GESTIÓN DE SOCIOS</h3>
+            <input type="text" id="nombreSocio" placeholder="Nombre del Socio" class="input-modern">
+            <div style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px; border-radius: 10px; margin-bottom: 15px;">
+                <label>Cartones:</label>
+                <input type="number" id="cantCartones" min="1" max="6" value="1" style="width: 50px; border: 1px solid #ccc; border-radius: 5px; padding: 5px;">
+            </div>
+            <button class="btn-glow" onclick="crearSocioMaestro()">GENERAR ACCESO</button>
+            
+            <div id="listaSocios" style="margin-top: 20px; text-align: left; max-height: 200px; overflow-y: auto;">
+                </div>
+        </div>
+
+        <div class="glass-container" style="max-width: 500px;">
+            <h3 style="color: var(--marine); margin-bottom: 10px;">SORTEO</h3>
+            <input type="datetime-local" id="fechaSorteo" class="input-modern">
+            <button class="btn-glow" style="background: var(--mango);" onclick="guardarProgramacion()">PROGRAMAR INICIO</button>
+            <button onclick="reiniciarTodo()" style="margin-top: 15px; background: none; border: none; color: #666; cursor: pointer; text-decoration: underline; font-size: 0.8rem;">Reiniciar todo el sistema</button>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
